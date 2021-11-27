@@ -11,7 +11,23 @@ const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', 
 
 const getFixture = (id) => read(getFixturePath(`${id}`)); // eslint-disable-line
 
-test('empty', () => {
-  makeRouter();
-  expect(1).toEqual(1);
+test('basic', () => {
+  const routes = [
+    {
+      path: '/courses',
+      handler: () => 'courses!',
+    },
+    {
+      path: '/courses/basics',
+      handler: () => 'basics',
+    },
+  ];
+
+  const router = makeRouter(routes);
+
+  const path = '/courses';
+  const handler = router.serve(path);
+  expect(handler()).toEqual('courses!');
+
+  expect(router.serve('/no_such_way')).toThrow(Error);
 });
