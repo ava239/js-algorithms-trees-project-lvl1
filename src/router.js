@@ -5,10 +5,25 @@ const makeRouter = (routeList) => {
     routes: {},
     serve: (path) => {
       const { routes } = router;
-      if (!Object.keys(routes).includes(path)) {
-        throw Error('no such route');
+      const [handlerFn, params] = Object.entries(routes).reduce((acc, [name, handler]) => {
+        const [foundHandler] = acc;
+        if (foundHandler !== null) {
+          return acc;
+        }
+        const regexp = name
+          .replace('/', '\\/')
+          .replace(/:(\w+)/gi, '(?<$1>\\w+)');
+        const match = path.match(new RegExp(`^${regexp}$`));
+        if (match !== null) {
+          const { groups = {} } = match;
+          return [handler, { ...groups }];
+        }
+        return acc;
+      }, [null, null]);
+      if (handlerFn !== null) {
+        return { handler: handlerFn, params };
       }
-      return routes[path];
+      throw Error('no such route');
     },
   };
 
