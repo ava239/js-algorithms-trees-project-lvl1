@@ -9,7 +9,7 @@ export default class PrefixTree {
       {},
     );
     const routes = config.map(({ path, handler, method = 'GET' }) => {
-      const routeParts = path.split('/').slice(1).map((part) => {
+      const parts = path.split('/').slice(1).map((part) => {
         if (part.match(/^:\w+$/)) {
           return ':param';
         }
@@ -17,21 +17,10 @@ export default class PrefixTree {
       });
       const matches = path.match(/:(\w+)/gi) ?? [];
       const params = matches.map((param) => param.substr(1));
-      return {
-        routeParts,
-        handler,
-        params,
-        method,
-      };
+      return { path: { parts, params }, handler, method };
     });
-    this.tree = routes.reduce((acc, route) => {
-      const {
-        routeParts,
-        handler,
-        params,
-        method,
-      } = route;
-      acc[method].addDeepChild(routeParts, { handler, params });
+    this.tree = routes.reduce((acc, { path: { parts, params }, handler, method }) => {
+      acc[method].addDeepChild(parts, { handler, params });
       return acc;
     }, treesByMethod);
   }
