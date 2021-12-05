@@ -2,12 +2,8 @@ import PrefixTreeNode from './node';
 
 export default class PrefixTree {
   constructor(config = {}) {
-    const methods = config.reduce((acc, { method = 'GET' }) => {
-      if (acc.includes(method)) {
-        return acc;
-      }
-      return [...acc, method];
-    }, []);
+    this.config = config;
+    const methods = this.getConfigMethodsList();
     const treesByMethod = methods.reduce(
       (acc, methodName) => ({ ...acc, [methodName]: new PrefixTreeNode() }),
       {},
@@ -28,17 +24,25 @@ export default class PrefixTree {
         method,
       };
     });
-    routes.forEach(
-      (
-        {
-          routeParts,
-          handler,
-          params,
-          method,
-        },
-      ) => treesByMethod[method].addDeepChild(routeParts, { handler, params }),
-    );
-    this.tree = treesByMethod;
+    this.tree = routes.reduce((acc, route) => {
+      const {
+        routeParts,
+        handler,
+        params,
+        method,
+      } = route;
+      acc[method].addDeepChild(routeParts, { handler, params });
+      return acc;
+    }, treesByMethod);
+  }
+
+  getConfigMethodsList() {
+    return this.config.reduce((acc, { method = 'GET' }) => {
+      if (acc.includes(method)) {
+        return acc;
+      }
+      return [...acc, method];
+    }, []);
   }
 
   getTree(method) {
