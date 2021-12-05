@@ -4,9 +4,9 @@ import PrefixTree from './prefixTree';
 const makeRouter = (routeList) => {
   const routeTree = new PrefixTree(routeList);
   return {
-    serve: (path) => {
+    serve: ({ path, method = 'GET' }) => {
       const pathParts = path.split('/').slice(1);
-      const routeData = routeTree.find(pathParts);
+      const routeData = routeTree.find(pathParts, method);
       if (routeData) {
         return routeData;
       }
