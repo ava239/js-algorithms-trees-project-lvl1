@@ -68,10 +68,13 @@ export default class PrefixTree {
   }
 
   getTree(method) {
-    return this.tree[method];
+    return this.tree[method] ?? null;
   }
 
   find(pathParts, method = 'GET', node = this.getTree(method), capturedParams = []) {
+    if (!node) {
+      return null;
+    }
     if (pathParts.length === 0) {
       const { handler, params, constraints } = node.meta;
       const mappedParams = params.map((name, key) => [name, capturedParams[key]]);
