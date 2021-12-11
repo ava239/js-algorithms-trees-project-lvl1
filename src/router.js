@@ -3,6 +3,7 @@ import _ from 'lodash';
 import PrefixTree from './prefixTree';
 
 const makeRouter = (routeList) => {
+  console.dir(routeList, { depth: null });
   const routeTree = new PrefixTree(routeList);
   console.dir(routeTree, { depth: null });
   return {
