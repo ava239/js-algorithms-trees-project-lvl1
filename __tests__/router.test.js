@@ -83,3 +83,43 @@ test('constraints', () => {
   const errorHandler = () => router.serve('/courses/noop/exercises/noop');
   expect(errorHandler).toThrow(Error);
 });
+
+test('hexlet', () => {
+  const routes = [
+    {
+      method: 'POST',
+      path: 'users/long/:id',
+      handler: () => 1,
+      constraints: { id: /\d+/ },
+    },
+    {
+      path: 'users/long/:way',
+      handler: () => 1,
+      constraints: { way: /[a-z]/ },
+    },
+    {
+      path: 'users/long/way/:name',
+      handler: () => 1,
+      constraints: { name: /[a-z]+/ },
+    },
+    {
+      path: 'api/:id/:name/risc-v',
+      handler: () => 1,
+      constraints: { id: /./, name: /^[a-z]+$/ },
+    },
+    {
+      method: 'PUT',
+      path: 'api/:id/:uid',
+      handler: () => 1,
+    },
+    { path: 'api/to/Japan/', handler: () => 1 },
+    { path: '/', handler: () => 1 },
+  ];
+  const router = makeRouter(routes);
+
+  const errorHandler = () => router.serve({ path: 'api/v1/Risc/', method: 'HEAD' });
+  expect(errorHandler).toThrow(Error);
+
+  expect(() => router.serve({ path: 'users/long/N' })).toThrowError(Error);
+  expect(() => router.serve({ path: '' })).toThrowError(Error);
+});
