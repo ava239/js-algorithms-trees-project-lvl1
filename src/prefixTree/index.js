@@ -33,12 +33,14 @@ export default class PrefixTree {
       method = 'GET',
       constraints = {},
     } = pathData;
-    const parts = path.split('/').slice(1).map((part) => {
-      if (part.match(/^:\w+$/)) {
-        return ':param';
-      }
-      return part;
-    });
+    const parts = path.split('/')
+      .filter(_.identity)
+      .map((part) => {
+        if (part.match(/^:\w+$/)) {
+          return ':param';
+        }
+        return part;
+      });
     const matches = path.match(/:(\w+)/gi) ?? [];
     const params = matches.map((param) => param.substr(1));
     const preparedConstraints = _.reduce(constraints, (acc, constraint, key) => {
