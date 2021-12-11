@@ -15,15 +15,6 @@ export default class PrefixTreeNode {
     return newChild;
   }
 
-  addDeepChild(path, meta) {
-    const [head, ...rest] = path;
-    if (path.length === 1) {
-      return this.addChild(head, meta);
-    }
-    const child = this.addChild(head);
-    return child.addDeepChild(rest, meta);
-  }
-
   getChild(searchName) {
     return this.children.find(({ name }) => name === searchName);
   }

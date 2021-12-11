@@ -11,7 +11,14 @@ export default class PrefixTree {
     );
     const routes = config.map(this.parsePath);
     this.tree = routes.reduce((acc, { path: { parts, params, constraints }, handler, method }) => {
-      acc[method].addDeepChild(parts, { handler, params, constraints });
+      const meta = { handler, params, constraints };
+      parts.reduce(({ router, partsLeft }) => {
+        const [head, ...rest] = partsLeft;
+        if (!rest.length) {
+          return { router: router.addChild(head, meta), partsLeft: rest };
+        }
+        return { router: router.addChild(head), partsLeft: rest };
+      }, { router: acc[method], partsLeft: parts });
       return acc;
     }, treesByMethod);
   }
