@@ -1,4 +1,5 @@
 // @ts-check
+import _ from 'lodash';
 import PrefixTree from './prefixTree';
 
 const makeRouter = (routeList) => {
@@ -9,7 +10,7 @@ const makeRouter = (routeList) => {
       console.log(request);
       const path = typeof request === 'string' ? request : request.path;
       const method = request.method ?? 'GET';
-      const pathParts = path.split('/').slice(1);
+      const pathParts = path.split('/').filter(_.identity);
       const routeData = routeTree.find(pathParts, method);
       if (routeData) {
         return routeData;
