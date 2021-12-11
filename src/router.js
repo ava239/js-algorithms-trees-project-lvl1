@@ -14,7 +14,7 @@ const makeRouter = (routeList) => {
       if (routeData) {
         return routeData;
       }
-      throw Error('no such route');
+      throw Error('no such path');
     },
   };
 };
