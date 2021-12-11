@@ -18,4 +18,8 @@ export default class PrefixTreeNode {
   getChild(searchName) {
     return this.children.find(({ name }) => name === searchName);
   }
+
+  setMeta(meta) {
+    this.meta = meta;
+  }
 }

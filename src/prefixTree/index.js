@@ -12,6 +12,10 @@ export default class PrefixTree {
     const routes = config.map(this.parsePath);
     this.tree = routes.reduce((acc, { path: { parts, params, constraints }, handler, method }) => {
       const meta = { handler, params, constraints };
+      if (!parts.length) {
+        acc[method].setMeta(meta);
+        return acc;
+      }
       parts.reduce(({ router, partsLeft }) => {
         const [head, ...rest] = partsLeft;
         if (!rest.length) {
