@@ -6,8 +6,9 @@ export default class PrefixTreeNode {
   }
 
   addChild(addName, meta = null) {
-    if (this.hasChild(addName)) {
-      return this.getChild(addName);
+    const child = this.getChild(addName);
+    if (child) {
+      return child;
     }
     const newChild = new PrefixTreeNode(addName, meta);
     this.children = [...this.children, newChild];
@@ -21,10 +22,6 @@ export default class PrefixTreeNode {
     }
     const child = this.addChild(head);
     return child.addDeepChild(rest, meta);
-  }
-
-  hasChild(searchName) {
-    return Boolean(this.getChild(searchName));
   }
 
   getChild(searchName) {

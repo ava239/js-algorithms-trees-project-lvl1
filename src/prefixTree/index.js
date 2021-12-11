@@ -76,12 +76,14 @@ export default class PrefixTree {
       return { handler, params: Object.fromEntries(mappedParams) };
     }
     const [head, ...rest] = pathParts;
-    if (node.hasChild(head)) {
-      return this.find(rest, method, node.getChild(head), capturedParams);
+    const child = node.getChild(head);
+    if (child) {
+      return this.find(rest, method, child, capturedParams);
     }
-    if (node.hasChild(':param')) {
+    const paramChild = node.getChild(':param');
+    if (paramChild) {
       const newCapturedParams = [...capturedParams, head];
-      return this.find(rest, method, node.getChild(':param'), newCapturedParams);
+      return this.find(rest, method, paramChild, newCapturedParams);
     }
     return null;
   }
