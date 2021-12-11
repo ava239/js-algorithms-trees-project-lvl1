@@ -78,15 +78,19 @@ export default class PrefixTree {
     if (pathParts.length === 0) {
       const { handler, params, constraints } = node.meta;
       const mappedParams = params.map((name, key) => [name, capturedParams[key]]);
-      mappedParams.forEach(([name, value]) => {
-        const constraint = constraints[name] ?? null;
-        if (!constraint) {
-          return;
-        }
-        if (!constraint(value)) {
-          throw new Error(`param ${name} does not match constraint`);
-        }
-      });
+      try {
+        mappedParams.forEach(([name, value]) => {
+          const constraint = constraints[name] ?? null;
+          if (!constraint) {
+            return;
+          }
+          if (!constraint(value)) {
+            throw new Error(`param ${name} does not match constraint`);
+          }
+        });
+      } catch (e) {
+        return null;
+      }
       return { handler, params: Object.fromEntries(mappedParams) };
     }
     const [head, ...rest] = pathParts;

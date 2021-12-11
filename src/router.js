@@ -8,16 +8,13 @@ const makeRouter = (routeList) => {
   return {
     serve: (request) => {
       const path = typeof request === 'string' ? request : request.path;
-      if (!path) {
-        throw Error('no such path');
-      }
       const method = request.method ?? 'GET';
       const pathParts = path.split('/').filter(_.identity);
       const routeData = routeTree.find(pathParts, method);
-      if (routeData) {
-        return routeData;
+      if (!path || !routeData) {
+        throw Error('no such path');
       }
-      throw Error('no such path');
+      return routeData;
     },
   };
 };
