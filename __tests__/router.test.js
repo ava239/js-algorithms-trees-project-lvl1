@@ -64,3 +64,22 @@ test('methods', () => {
 
   expect(result.handler(result.params)).toEqual('created!');
 });
+
+test('constraints', () => {
+  const routes = [
+    {
+      path: '/courses/:course_id/exercises/:id',
+      constraints: { id: /\d+/, course_id: (courseId) => courseId.startsWith('js') },
+      handler: () => 'exercise!',
+    },
+  ];
+
+  const router = makeRouter(routes);
+
+  const result = router.serve({ path: '/courses/js/exercises/1' });
+
+  expect(result.handler(result.params)).toEqual('exercise!');
+
+  const errorHandler = () => router.serve('/courses/noop/exercises/noop');
+  expect(errorHandler).toThrow(Error);
+});
