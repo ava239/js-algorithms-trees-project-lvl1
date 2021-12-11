@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import PrefixTreeNode from './node';
 
 export default class PrefixTree {
@@ -40,7 +41,17 @@ export default class PrefixTree {
     });
     const matches = path.match(/:(\w+)/gi) ?? [];
     const params = matches.map((param) => param.substr(1));
-    return { path: { parts, params, constraints }, handler, method };
+    const preparedConstraints = _.reduce(constraints, (acc, constraint, key) => {
+      switch (typeof constraint) {
+        case 'function':
+          return { ...acc, [key]: constraint };
+        case 'string':
+          return { ...acc, [key]: (value) => value.match(new RegExp(constraint)) };
+        default:
+          return { ...acc, [key]: (value) => value.match(constraint) };
+      }
+    }, {});
+    return { path: { parts, params, constraints: preparedConstraints }, handler, method };
   }
 
   getTree(method) {
@@ -56,22 +67,8 @@ export default class PrefixTree {
         if (!constraint) {
           return;
         }
-        console.log(constraint, value);
-        switch (typeof constraint) {
-          case 'function':
-            if (!constraint(value)) {
-              throw new Error(`param ${name} does not match constraint`);
-            }
-            break;
-          case 'string':
-            if (!value.match(new RegExp(constraint))) {
-              throw new Error(`param ${name} does not match constraint`);
-            }
-            break;
-          default:
-            if (!value.match(constraint)) {
-              throw new Error(`param ${name} does not match constraint`);
-            }
+        if (!constraint(value)) {
+          throw new Error(`param ${name} does not match constraint`);
         }
       });
       return { handler, params: Object.fromEntries(mappedParams) };
